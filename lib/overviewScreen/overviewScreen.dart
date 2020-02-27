@@ -17,6 +17,7 @@ class CategoryOverviewScreen extends StatelessWidget {
             return CategoryItem(
               title: catData.title,
               color: catData.color,
+              id: catData.id,
             );
           },
         ).toList(),
