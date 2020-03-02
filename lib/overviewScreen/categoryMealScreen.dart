@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:foodi/dummyData.dart';
+import 'package:foodi/models/meal.dart';
 import 'package:foodi/widgets/mealItems.dart';
 
-class CategoryMealScreen extends StatelessWidget {
+class CategoryMealScreen extends StatefulWidget {
+  final List<Meal> availableMeals;
+  CategoryMealScreen({this.availableMeals});
   /* final String title;
   final Color color;
   CategoryMealScreen(this.title, this.color);*/
@@ -10,18 +13,34 @@ class CategoryMealScreen extends StatelessWidget {
   static const String routeName = "/meal_screen";
 
   @override
-  Widget build(BuildContext context) {
+  _CategoryMealScreenState createState() => _CategoryMealScreenState();
+}
+
+class _CategoryMealScreenState extends State<CategoryMealScreen> {
+  String categoryTitle;
+  List<Meal> categoryMeals;
+  Color categoryColor;
+
+  //--did changed dependency is used because widgets value are return after iniit state is called.--
+  @override
+  void didChangeDependencies() {
     final routeArguments = ModalRoute.of(context).settings.arguments as Map;
-    final categoryTitle = routeArguments['title'];
-    final categoryColor = routeArguments['color'];
+    categoryTitle = routeArguments['title'];
+    categoryColor = routeArguments['color'];
     final categoryId = routeArguments['id'];
 
-    final categoryMeals = DUMMY_MEALS
+    //DUMMY_MEAL is replaced by availableMeals after filter
+    categoryMeals = widget.availableMeals
         .where(
           (meal) => meal.categories.contains(categoryId),
         )
         .toList();
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: categoryColor,
