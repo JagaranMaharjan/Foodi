@@ -25,6 +25,31 @@ class _MyAppState extends State<MyApp> {
   };
 
   List<Meal> _availableMeals = DUMMY_MEALS;
+  List<Meal> _favouriteMeals = [];
+
+  //for adding / removing favourite meals
+  void _toggleFavourite(String mealId) {
+    final existingIndex =
+        _favouriteMeals.indexWhere((meal) => meal.id == mealId);
+    if (existingIndex >= 0) {
+      setState(
+        () {
+          _favouriteMeals.removeAt(existingIndex);
+        },
+      );
+    } else {
+      setState(() {
+        _favouriteMeals.add(
+          DUMMY_MEALS.firstWhere((meal) => meal.id == mealId),
+        );
+      });
+    }
+  }
+
+  //check whether meal is in favourite category or not
+  bool isMealFavourtite(String mealId) {
+    return _favouriteMeals.any((meal) => meal.id == mealId);
+  }
 
   void _setFilters(Map<String, bool> filterData) {
     setState(
@@ -55,7 +80,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Foodi App',
-      home: ButtonBarScreen(), //TabViewScreen(),
+      //home: ButtonBarScreen(), //TabViewScreen(),
       theme: ThemeData(
         primaryColor: Colors.blue,
         accentColor: Colors.cyan.shade50,
@@ -73,12 +98,15 @@ class _MyAppState extends State<MyApp> {
               title: TextStyle(fontFamily: "Raleway", fontSize: 17),
             ),
       ),
+      initialRoute: "/",
       routes: {
+        "/": (ctx) => ButtonBarScreen(_favouriteMeals),
         CategoryMealScreen.routeName: (ctx) => CategoryMealScreen(
               availableMeals: _availableMeals,
             ),
-        MealDetailsScreen.routeName: (ctx) => MealDetailsScreen(),
-        ButtonBarScreen.routeName: (ctx) => ButtonBarScreen(),
+        MealDetailsScreen.routeName: (ctx) =>
+            MealDetailsScreen(_toggleFavourite, isMealFavourtite),
+        ButtonBarScreen.routeName: (ctx) => ButtonBarScreen(_favouriteMeals),
         FilterOverViewScreen.routeName: (ctx) => FilterOverViewScreen(
               setFilter: _setFilters, // to on/off switch
               currentFilters:
